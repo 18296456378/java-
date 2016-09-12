@@ -3,6 +3,8 @@ package com.cjw.seckill.dao;
 import java.util.Date;
 import java.util.List;
 
+import org.apache.ibatis.annotations.Param;
+
 import com.cjw.seckill.entity.Seckill;
 
 public interface SeckillDao {
@@ -12,7 +14,7 @@ public interface SeckillDao {
 	 * @param killTime
 	 * @return 影响的行数
 	 */
-	int reduceNmuber(long seckillId,Date killTime);
+	int reduceNmuber(@Param("seckillId") long seckillId,@Param("killTime") Date killTime);
 	
 	/**
 	 * 根据秒杀id查询秒杀对象
@@ -26,7 +28,7 @@ public interface SeckillDao {
 	 * @param limit 多少条
 	 * @return
 	 */
-	List<Seckill> queryAll(int offet,int limit);
+	List<Seckill> queryAll(@Param("offset") int offset,@Param("limit") int limit);
 	
 
 }
