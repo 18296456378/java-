@@ -21,7 +21,7 @@ public class SeckillExection{
 	
 	
 	
-	public SeckillExection(long seckillId, SeckillStateEnum stateEnum, String stateInfo, SuccessKilled successKilled) {
+	public SeckillExection(long seckillId, SeckillStateEnum stateEnum, SuccessKilled successKilled) {
 		super();
 		this.seckillId = seckillId;
 		this.state = stateEnum.getState();
@@ -70,6 +70,14 @@ public class SeckillExection{
 
 	public void setSuccessKilled(SuccessKilled successKilled) {
 		this.successKilled = successKilled;
+	}
+
+
+
+	@Override
+	public String toString() {
+		return "SeckillExection [seckillId=" + seckillId + ", state=" + state + ", stateInfo=" + stateInfo
+				+ ", successKilled=" + successKilled + "]";
 	}
 	
 	
