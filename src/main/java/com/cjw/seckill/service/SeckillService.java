@@ -38,6 +38,14 @@ public interface SeckillService{
 	 * @return
 	 */
 	SeckillExection executeSeckill(long seckillId,long userPhone,String md5) throws RepeatKillException,SeckillExceptionClose,SeckillException;
+	/**
+	 * 执行秒杀存储过程
+	 * @param seckillId
+	 * @param userPhone
+	 * @param md5
+	 * @return
+	 */
+	SeckillExection executeSeckillProcedure(long seckillId,long userPhone,String md5);
 }
 
 

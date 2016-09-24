@@ -59,4 +59,18 @@ public class SeckillServiceTest {
 		}
 		
 	}
+	/**
+	 * 测试存储过程执行秒杀过程
+	 */
+	@Test
+	public void executeSeckillProcedure(){
+		long seckillId = 1001;
+		long userPhone = 18296456367L;
+		Exposer export = seckillService.exportSeckillUrl(seckillId);
+		if (export.isExposer()) {
+			String md5 = export.getMd5();
+			SeckillExection se = seckillService.executeSeckillProcedure(seckillId, userPhone, md5);
+			logger.info(se.getStateInfo());
+		}
+	}
 }

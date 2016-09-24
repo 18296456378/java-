@@ -52,3 +52,60 @@ ADD INDEX index_c_s(start_time,create_time);
 
 -- 上线v1.2
 -- DDL
+
+-- 创建秒杀存储过程
+-- 秒杀执行存储过程
+DELIMITER $$ -- console;转换$$为
+-- 定义存储过程
+-- 参数：in 输入参数；out输出参数
+-- ROW_COUNT();用来返回上一条修改类型sql(DELETE,INSERT,UPDATE)的影响行数
+-- ROW_COUNT():0表示未修改数据>0：表示修改的行数<0:表示程序出错/未执行sql
+CREATE PROCEDURE execute_seckill
+	(IN v_seckill_id BIGINT,IN v_phone BIGINT,
+		IN v_kill_time TIMESTAMP,OUT r_result INT)
+BEGIN
+	DECLARE insert_count INT DEFAULT 0; -- 定义一个变量
+	START TRANSACTION; -- 开启事物
+	INSERT IGNORE INTO success_killed
+		(seckill_id,user_phone,create_time)
+	VALUES(v_seckill_id,v_phone,v_kill_time);
+	SELECT ROW_COUNT() INTO insert_count;
+	IF(insert_count = 0) THEN
+		ROLLBACK;
+		SET r_result = -1; -- 代表重复秒杀
+	ELSEIF(insert_count < 0)THEN
+		ROLLBACK;
+		SET r_result = -2; -- 代表系统异常
+	ELSE
+		UPDATE seckill
+			SET number = number-1
+			WHERE seckill_id = v_seckill_id
+				AND v_kill_time > start_time
+				AND v_kill_time < end_time
+				AND number > 0;
+		SELECT ROW_COUNT() INTO insert_count;
+		IF(insert_count = 0)THEN
+			SET r_result = 0;
+			ROLLBACK;
+		ELSEIF(insert_count < 0)THEN
+			SET r_result = -2; -- 系统异常
+		ELSE
+			SET r_result = 1;
+			COMMIT;
+		END IF;
+	END IF;
+END;
+$$ -- 定义存储过程结束
+
+DELIMITER ;
+SET @r_result = -3;
+-- 执行存储过程
+CALL execute_seckill(1001,18296456379,NOW(),@r_result);
+-- 获取结果
+SELECT @r_result;
+
+-- 存储过程
+-- 1:存储过程优化：减少事物行级锁持有时间
+-- 2:不要过度依赖存储过程
+-- 3：简单的逻辑可以应用存储过程
+-- 4：QPS:一个秒杀单6000/qps(查询吞吐量)

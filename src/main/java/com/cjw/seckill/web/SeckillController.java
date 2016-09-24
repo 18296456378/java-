@@ -92,14 +92,14 @@ public class SeckillController {
 	@ResponseBody
 	public SeckillResult<SeckillExection> execute(@PathVariable("seckillId") Long seckillId,
 												  @PathVariable("md5") String md5,
-												  @CookieValue(value="killPhone",required = false) Long phone){
-		if (phone == null) {
+												  @CookieValue(value="killPhone",required = false) Long userPhone){
+		if (userPhone == null) {
 			return new SeckillResult<>(true, "未注册");
 		}
 		SeckillResult<SeckillExection> result;
 		try {
-			
-			SeckillExection seckillExection = seckillService.executeSeckill(seckillId, phone, md5);
+			//存储过程调用
+			SeckillExection seckillExection = seckillService.executeSeckillProcedure(seckillId, userPhone, md5);
 			result = new SeckillResult<SeckillExection>(true, seckillExection);
 			return result;
 		} catch (RepeatKillException r){
